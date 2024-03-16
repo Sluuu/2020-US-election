@@ -5,7 +5,7 @@ author:
 thanks: "Code and data are available at: https://github.com/Sluuu/Politics.git"
 date: today
 date-format: long
-abstract: "hi Second sentence. Third sentence. Fourth sentence."
+abstract: "This study employs logistic regression modeling on data from the Cooperative Election Study (CES) to forecast the 2020 US presidential election results. Focused on predicting voting choices between Trump and Biden, the analysis incorporates variables like employment status, education level, gender, and race. The research aims to gauge the probability of victory for each candidate, with a particular interest in assessing actual support levels. The dataset, sourced from CES, offers insight into voter behavior and demographic trends during this historic election."
 format: pdf
 number-sections: true
 bibliography: references.bib
@@ -38,8 +38,9 @@ Back in 2020, the US was having an important presidential election contest betwe
 
 In this study, we used a logistic regression model to predict the 2020 election results, utilizing data from the Cooperative Election Study (CES). This model is well-suited for binary outcomes, such as predicting whether an individual voted for Trump or Biden. Our analysis aims to assess the probability of victory for each candidate, considering a variety of factors including employment status, education level, gender, and their race. The primary objective is to determine the actual support levels for Trump and Biden.
 
-The remainder of this paper is structured into different sections. @sec-data shows the data that are used for our study. It includes some graphs to demonstrate different groups of respondents in our data. @sec-model builds the model and discusses its justification and explanation. @sec-result highlights the results of the predictions using tables and graphs. @sec-discussion contains discussions that conducted based on the findings, which addresses the voting prediction results based on race, region, employment status, and the influence of COVID-19 and in-mail voting systems.
+The paper is organized into distinct sections. In @sec-data, we present the dataset utilized in our study, by assigning graphs to show various respondent groups. @sec-model outlines the development and rationale behind our model. @sec-result showcases prediction outcomes through tables and graphs. Lastly, @sec-discussion delves into discussions based on our findings, based on examining voting predictions relative to race, educational level, employment status, and gender.
 
+\newpage 
 # Data {#sec-data}
 
 ## Source of Data
@@ -66,7 +67,7 @@ y_i|\pi_i &\sim \text{Bern}(\pi_i) \\
 
 Where $y_i$ is the political preference of the respondent, it equals to 1 if the respondent voted for Biden and 0 for Trump, $\text{employment\_status}_i$ is the employment status of the respondent, $\text{race}_i$ is the race of the respondent, $\text{education}_i$ is the highest educational level of the respondent, and lastly $\text{gender}_i$ is the gender of the respondent. 
 The coefficients ($\beta_1$, $\beta_2$, $\beta_3$) are being assumed as a normal distribution with a mean of 0 and a standard deviation of 2.5 for each parameter. Lastly, $pi_i$ is the probability of voting for Biden. 
-We run the model in R [@citeR] using the `rstanarm` package of @rstanarm.
+We run the model in R [@citeR] using the `rstanarm` package of @rstanarm, `dplyr` package of @dplyr, `Knitr` package of @citeKnitr, `Tibble` package of @citeTibble, `Tidyverse` package of @citeTidyverse, `ggplot2` package of @ggplot2, and `modelsummary` package of @modelsummary.
 
 ## Model justification
 
@@ -74,10 +75,11 @@ We anticipate a positive correlation between individuals identifying as Black, A
 
 For the education level, we expect respondents who has a higher educational level to be leaning towards to support Biden. As people with higher educational levels are more open to diverse perspectives and the new directions in education that Biden proposed [@Bideneduc].  
 
-Lastly the voting preferences for employed voters and the difference in gender are harder to determine.
+Lastly the voting preferences for different employment status voters and the difference in gender are harder to determine.
 
+\newpage
 
-# Results {sec-result}
+# Results {#sec-result}
 
 Our results are summarized in @tbl-modelresults.
 ```{r}
@@ -108,3 +110,99 @@ modelsummary(
 )
 
 ```
+Overall, our results were mostly matching with our predictions. Which individuals identifying as Black, Asian, or Hispanic and their support for Biden. Which White are more likely to support Trump. For the education level, the respondents who has a higher educational level to be leaning towards to support Biden. For gender, we observed that males are way more likely to vote for Trump than females. Lastly, the voting preferences for different employment status voters have huge differences between different employment status.
+
+\newpage
+
+# Discussion {#sec-discussion}
+
+## Weaknesses and Next Step
+The first weakness/limitation is that our regression only focuses on Trump and Biden. Which didn't go beyond other candidates. 
+
+The second weakness we have was that our control variables were too less. Which might not fully capture the preferences. 
+
+Lastly, there might exist some sampling bias in our study. As our sample size is around 43554 respondents which does not even reach 1% of our total voter population, it is possible that the results from the survey respondents might not fully represent the whole population. In future studies, we should try to increase our sample size by raising the amount of target population. Besides, we hope to incorporate more demographic variables into our research. This helps us to have a more accurate prediction because the variation of prediction outcomes can be explained more comprehensively by the predictors we add. 
+
+
+
+\newpage 
+\appendix 
+
+# Appendix 
+
+## Posterior predictive check
+In @fig-ppcheckandposteriorvsprior-1 we implement a posterior predictive check. This shows...
+
+In @fig-ppcheckandposteriorvsprior-2 we compare the posterior with the prior. This shows... 
+```{r}
+#| eval: true
+#| echo: false
+#| message: false
+#| warning: false
+#| label: fig-ppcheckandposteriorvsprior
+#| layout-ncol: 2
+#| fig-cap: "Examining how the model fits, and is affected by, the data"
+#| fig-subcap: ["Posterior prediction check", "Comparing the posterior with the prior"]
+
+analysis_data <- arrow::read_parquet(here::here("data/analysis_data/analysis_data.parquet"))
+
+set.seed(853)
+
+pp_check(first_model) +
+  theme_classic() +
+  theme(legend.position = "bottom")
+
+```
+
+
+## Diagnostics
+
+@fig-traceplot is a trace plot. It shows a graphical analysis of Markov chain Monte Carlo (MCMC) simulations. In our graph the lines does not suggest anything out of the ordinary, meaning the chains are mixing well and the MCMC algorithm and is converging into the correct distribution. 
+
+@fig-rhatplot is a Rhat plot. It is used to assess convergence in Markov chain Monte Carlo (MCMC) simulations. In our graph values are close to 1 and not over 1.1. This indicates that the chains are converging well to the target distribution.
+
+```{r}
+#| echo: false
+#| eval: true
+#| message: false
+#| warning: false
+#| label: fig-traceplot
+#| fig-cap: "Checking the convergence of the MCMC algorithm"
+#| fig-subcap: ["Trace plot"]
+
+
+plot(first_model, "trace")
+
+```
+
+```{r}
+#| echo: false
+#| eval: true
+#| message: false
+#| warning: false
+#| label: fig-rhatplot
+#| fig-cap: "Checking the convergence of the MCMC algorithm"
+#| fig-subcap: ["Rhat plot"]
+
+
+
+plot(first_model, "rhat")
+```
+
+## Creditibility Intervals
+
+@fig-modelresultsfig shows the 90% Credible intervals for predictors of support for Biden
+```{r}
+#| echo: false
+#| eval: true
+#| label: fig-modelresultsfig
+#| fig-cap: "Credible intervals for predictors of support for Biden"
+#| warning: false
+
+modelplot(first_model, conf_level = 0.9) +
+  labs(x = "90 per cent credibility interval")
+```
+
+\newpage
+
+# References
