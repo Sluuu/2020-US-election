@@ -77,4 +77,34 @@ For the education level, we expect respondents who has a higher educational leve
 Lastly the voting preferences for employed voters and the difference in gender are harder to determine.
 
 
+# Results {sec-result}
 
+Our results are summarized in @tbl-modelresults.
+```{r}
+#| echo: false
+#| eval: true
+#| warning: false
+#| message: false
+
+library(rstanarm)
+
+first_model <-
+  readRDS(file = here::here("models/political_preferences.rds"))
+
+```
+
+```{r}
+#| echo: false
+#| eval: true
+#| label: tbl-modelresults
+#| tbl-cap: "Explanatory models of voting preferences"
+#| warning: false
+
+modelsummary(
+  list(
+    "Supported Biden" = first_model
+  ),
+  statistic = "mad"
+)
+
+```
