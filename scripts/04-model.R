@@ -1,37 +1,43 @@
 #### Preamble ####
-# Purpose: Models... [...UPDATE THIS...]
-# Author: Rohan Alexander [...UPDATE THIS...]
-# Date: 11 February 2023 [...UPDATE THIS...]
-# Contact: rohan.alexander@utoronto.ca [...UPDATE THIS...]
+# Purpose: Downloads and saves the data from CES2020
+# Author: Sean Liu
+# Date: 16 March 2024
+# Contact: yuhsiang.liu@mail.utoronto.ca
 # License: MIT
-# Pre-requisites: [...UPDATE THIS...]
-# Any other information needed? [...UPDATE THIS...]
+
 
 
 #### Workspace setup ####
 library(tidyverse)
 library(rstanarm)
+library(dplyr)
+library(arrow)
 
 #### Read data ####
-analysis_data <- read_csv("data/analysis_data/analysis_data.csv")
+analysis_data <- read_parquet("data/analysis_data/analysis_data.parquet")
+set.seed(853)
 
-### Model data ####
-first_model <-
+ces2020_reduced <- 
+  ces2020 |> 
+  slice_sample(n = 10000)
+
+#### Model Data ####
+political_preferences <-
   stan_glm(
-    formula = flying_time ~ length + width,
-    data = analysis_data,
-    family = gaussian(),
+    voted_for ~ employment_stat + education + race + gender,
+    data = ces2020,
+    family = binomial(link = "logit"),
     prior = normal(location = 0, scale = 2.5, autoscale = TRUE),
-    prior_intercept = normal(location = 0, scale = 2.5, autoscale = TRUE),
-    prior_aux = exponential(rate = 1, autoscale = TRUE),
+    prior_intercept = 
+      normal(location = 0, scale = 2.5, autoscale = TRUE),
     seed = 853
   )
 
 
+
+
 #### Save model ####
 saveRDS(
-  first_model,
-  file = "models/first_model.rds"
+  political_preferences,
+  file = "political_preferences.rds"
 )
-
-
