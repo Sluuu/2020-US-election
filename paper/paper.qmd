@@ -47,6 +47,87 @@ The paper is organized into distinct sections. In @sec-data, we present the data
 Our primary data is from the 2020 Cooperative Election Study, CES @Ces2020. The data includes a nationally representative sample of 61,000 American adults. @Ces2020 includes the data from the survey, a full guide to the data, and the questionnaires.
 
 @fig-education shows the relationship between respondents' educational level, gender and their voting preferences. In both gender, respondents with higher educational level tends to lean more towards Biden.
+```{r}
+#| label: fig-education 
+#| fig-cap: filtered by gender 
+#| echo: false
+#| warning: false
+#| message: false
+#| eval: false
+
+educ_gen <-
+  ggplot(ces2020, aes(x = education, fill = voted_for)) +
+  stat_count(position = "dodge") +
+  facet_wrap(facets = vars(gender)) +
+  theme_minimal() +
+  labs(
+    x = "Highest education",
+    y = "Number of respondents",
+    fill = "Voted for"
+  ) +
+  coord_flip() +
+  scale_fill_brewer(palette = "Set1") +
+  theme(legend.position = "bottom")
+
+print(educ_gen)
+```
+
+@fig-race shows the relationship between respondents' race, gender and their voting preferences. For males, individuals identifying as Black, Asian, or Hispanic supported more towards Biden. For white males the numbers of supporters between Biden and Trump are close. For female respondents, almost all kind of race are more likely to support Biden. 
+```{r}
+#| label: fig-race 
+#| fig-cap: filtered by gender 
+#| echo: false
+#| warning: false
+#| message: false
+#| eval: false
+
+
+race_gen <-
+  ggplot(ces2020, aes(x = race, fill = voted_for)) +
+  stat_count(position = "dodge") +
+  facet_wrap(facets = vars(gender)) +
+  theme_minimal() +
+  labs(
+    x = "race",
+    y = "Number of respondents",
+    fill = "Voted for"
+  ) +
+  coord_flip() +
+  scale_fill_brewer(palette = "Set1") +
+  theme(legend.position = "bottom")
+
+
+print(race_gen)
+```
+
+@fig-employment_status shows the relationship between respondents' employment status, gender and their voting preferences. For male full-time respondents, they are more likely to support Biden. For the rest of the male respondents, the number of supporters between Biden and Trump are close. For female respondents, regardless of the employment status, most of the them are supporting Biden. 
+```{r}
+#| label: fig-employment_status
+#| fig-cap: filtered by gender 
+#| echo: false
+#| warning: false
+#| message: false
+#| eval: false
+
+emplo_stat_gen <-
+  ggplot(ces2020, aes(x = employment_stat, fill = voted_for)) +
+  stat_count(position = "dodge") +
+  facet_wrap(facets = vars(gender)) +
+  theme_minimal() +
+  labs(
+    x = "race",
+    y = "Number of respondents",
+    fill = "Voted for"
+  ) +
+  coord_flip() +
+  scale_fill_brewer(palette = "Set1") +
+  theme(legend.position = "bottom")
+
+print(emplo_stat_gen)
+
+```
+
+
 
 # Model {#sec-model}
 ## Model set-up
@@ -131,9 +212,8 @@ Lastly, there might exist some sampling bias in our study. As our sample size is
 # Appendix 
 
 ## Posterior predictive check
-In @fig-ppcheckandposteriorvsprior-1 we implement a posterior predictive check. This shows...
+In @fig-ppcheckandposteriorvsprior we implement a posterior predictive check.
 
-In @fig-ppcheckandposteriorvsprior-2 we compare the posterior with the prior. This shows... 
 ```{r}
 #| eval: true
 #| echo: false
@@ -153,6 +233,8 @@ pp_check(first_model) +
   theme(legend.position = "bottom")
 
 ```
+
+
 
 
 ## Diagnostics
